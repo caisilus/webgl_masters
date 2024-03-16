@@ -1,0 +1,22 @@
+{
+  "name": "graphics_labs",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx parcel ./index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "-": "^0.0.1",
+    "@parcel/transformer-raw": "^2.8.1",
+    "gl-matrix": "^3.4.3",
+    "parcel": "^2.8.1",
+    "parcel-plugin-static-files-copy": "^2.6.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-glsl": "^2.8.1",
+    "parcel-reporter-static-files-copy": "^1.5.3"
+  }
+}
