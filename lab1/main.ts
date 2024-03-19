@@ -6,6 +6,7 @@ import { Transformator } from "../src/transformator";
 import Camera from "../src/camera";
 import TriangleData from "./triangle_data";
 import VertexAttribute from "../src/vertex_attribute";
+import SquareData from "./square_data";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -36,7 +37,7 @@ class Main {
     this.gl = getGl(canvas);
     const programBuilder = new ProgramBuilder(this.gl);
     this.program = programBuilder.buildProgram(vertexShader, fragmentShader);
-    this.drawData = new TriangleData();
+    this.drawData = new SquareData();
     this.createBuffers();
 
     this.start();
@@ -85,7 +86,7 @@ class Main {
   update() {
     this.clearBackground();
 
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.drawData.verticesCount);
+    this.gl.drawArrays(this.drawData.drawMode(this.gl), 0, this.drawData.verticesCount);
 
     requestAnimationFrame(() => {
       this.update();
