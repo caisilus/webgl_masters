@@ -2,11 +2,10 @@ import fragmentShader from "./shaders/shader.frag";
 import vertexShader from "./shaders/shader.vert";
 import { ProgramBuilder } from "../src/program_builder";
 import { ShaderProgram } from "../src/shader_program";
-import { Transformator } from "../src/transformator";
-import Camera from "../src/camera";
-import TriangleData from "./triangle_data";
 import VertexAttribute from "../src/vertex_attribute";
+import TriangleData from "./triangle_data";
 import SquareData from "./square_data";
+import DrawData from "../src/draw_data";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -31,17 +30,23 @@ class Main {
   vertices!: Float32Array;
   colors!: Float32Array;
   indices!: Uint16Array;
-  drawData: TriangleData;
+  drawData!: DrawData;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, readonly select: HTMLSelectElement) {
     this.gl = getGl(canvas);
     const programBuilder = new ProgramBuilder(this.gl);
     this.program = programBuilder.buildProgram(vertexShader, fragmentShader);
-    this.drawData = new SquareData();
-    this.createBuffers();
 
+    this.renderSelection();
+    this.select.addEventListener('change', (e) => { this.renderSelection(); });
+  }
+
+  renderSelection() {
+    const selectedValue = this.select.options[this.select.selectedIndex].value;
+    this.drawData = selectedValue == "triangle" ? new TriangleData() : new SquareData();
+    this.createBuffers();
     this.start();
-    this.update();
+    this.draw();
   }
 
   createBuffers() {
@@ -61,7 +66,6 @@ class Main {
     );
 
     this.drawData.vertexAttributes(this.gl).forEach(vertexAttribute => {
-      console.log(vertexAttribute.attributeName);
       const location = this.gl.getAttribLocation(this.program.program, vertexAttribute.attributeName);
       this.gl.vertexAttribPointer(location, vertexAttribute.size, 
                                             vertexAttribute.type, 
@@ -83,14 +87,10 @@ class Main {
     this.gl.depthFunc(this.gl.LEQUAL);
   }
 
-  update() {
+  draw() {
     this.clearBackground();
 
     this.gl.drawArrays(this.drawData.drawMode(this.gl), 0, this.drawData.verticesCount);
-
-    requestAnimationFrame(() => {
-      this.update();
-    });
   }
 
   clearBackground() {
@@ -100,9 +100,11 @@ class Main {
 }
 function main() {
   const canvas = document.querySelector("canvas#mycanvas") as HTMLCanvasElement;
+  const select = document.querySelector("select#figure") as HTMLSelectElement;
+
   canvas.setAttribute("width", "600");
   canvas.setAttribute("height", "600");
-  const mainObj = new Main(canvas)
+  const mainObj = new Main(canvas, select);
 }
 
 main();
