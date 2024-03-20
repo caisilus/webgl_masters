@@ -16,6 +16,14 @@ export default class VertexAttribute {
     ]
   }
 
+  public static attributesFor2DVertex(gl: WebGL2RenderingContext) {
+    return [
+      new VertexAttribute("vertPosition", 2, gl.FLOAT, false, 
+                          2 * Float32Array.BYTES_PER_ELEMENT, 
+                          0),
+    ]
+  }
+
   public static attributesFor3DColoredVertex(gl: WebGL2RenderingContext) {
     return [
       new VertexAttribute("vertPosition", 3, gl.FLOAT, false, 

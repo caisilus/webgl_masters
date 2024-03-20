@@ -6,6 +6,7 @@ import DrawData from "../src/draw_data";
 import { getGl } from "../src/utils";
 import PentagonMode from "./pentagon_mode";
 import CubeMode from "./cube_mode";
+import SquareMode from "./square_mode";
 
 class Main {
   canvas: HTMLCanvasElement;
@@ -25,6 +26,9 @@ class Main {
         break;
       case "cube":
         const cubeMode = new CubeMode(this.canvas);
+        break;
+      case "square":
+        const squareMode = new SquareMode(this.canvas);
         break;
     }
   }
