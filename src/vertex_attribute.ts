@@ -22,8 +22,8 @@ export default class VertexAttribute {
                           6 * Float32Array.BYTES_PER_ELEMENT, 
                           0),
       new VertexAttribute("vertColor", 3, gl.FLOAT, false, 
-                          5 * Float32Array.BYTES_PER_ELEMENT, 
-                          2 * Float32Array.BYTES_PER_ELEMENT)
+                          6 * Float32Array.BYTES_PER_ELEMENT, 
+                          3 * Float32Array.BYTES_PER_ELEMENT)
     ]
   }
 }
