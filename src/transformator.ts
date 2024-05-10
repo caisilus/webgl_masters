@@ -8,7 +8,7 @@ export class Transformator{
 	private yRotationMatrix = new Float32Array(16);
     private zRotationMatrix = new Float32Array(16);
 
-    private translationMatrix = new Float32Array(16);
+    private translationMatrix = mat4.create();
     private scalingMatrix = new Float32Array(16);
     private rotateMatrix = new Float32Array(16);
 
@@ -52,6 +52,28 @@ export class Transformator{
         mat4.mul(this.rotateMatrix, rotateXYMatrix, this.zRotationMatrix);
         this.updateForward();
         this.buildWorldMatrix();
+    }
+
+    rotateAmongVerticalAxis(axisPoint: [number, number, number], angle: number) {
+        let dx = axisPoint[0] - this.position()[0];
+        let dy = axisPoint[1] - this.position()[1];
+        let dz = axisPoint[2] - this.position()[2];
+        const delta = vec3.fromValues(dx, dy, dz);
+        console.log("Radius before: " + delta.length);
+
+        const finalTransformation = mat4.create();
+        mat4.translate(finalTransformation, finalTransformation, [dx, dy, dz])
+        mat4.rotateY(finalTransformation, finalTransformation, glMatrix.toRadian(angle))
+        mat4.translate(finalTransformation, finalTransformation, [-dx, -dy, -dz])
+        mat4.rotateY(finalTransformation, finalTransformation, -glMatrix.toRadian(angle))
+
+        const resultPosition = vec3.create();
+        vec3.transformMat4(resultPosition, this.position(), finalTransformation);
+
+        mat4.identity(this.translationMatrix);
+        mat4.translate(this.translationMatrix, this.translationMatrix, resultPosition);
+
+        this.rotate([0, angle, 0]);
     }
 
     updateForward() {
@@ -105,14 +127,15 @@ export class Transformator{
     }
 
     buildWorldMatrix(){
-        var scaleTranslateMatrix = new Float32Array(16);
-        mat4.mul(scaleTranslateMatrix, this.scalingMatrix, this.translationMatrix);
-        mat4.mul(this.matWorld, scaleTranslateMatrix, this.rotateMatrix);
+        // T * R * S
+        var translateRotateMatrix = new Float32Array(16);
+        mat4.mul(translateRotateMatrix, this.translationMatrix, this.rotateMatrix);
+        mat4.mul(this.matWorld, translateRotateMatrix, this.scalingMatrix);
     }
 
     position() {
         let newPosition = vec3.fromValues(0, 0, 0);
-        vec3.transformMat4(newPosition, newPosition, this.translationMatrix);
+        vec3.transformMat4(newPosition, newPosition, this.matWorld);
         return newPosition;
     }
     

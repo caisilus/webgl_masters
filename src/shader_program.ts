@@ -57,6 +57,10 @@ export class ShaderProgram {
         return this.linked;
     }
 
+    getAttributeLocation(name: string): number {
+      return this.gl.getAttribLocation(this.program, name);
+    }
+
     getUniformLocation(name: string): WebGLUniformLocation | null {
         if (name in this.cachedUniformLocations) {
             return this.cachedUniformLocations[name];
