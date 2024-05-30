@@ -1,26 +1,35 @@
-import DrawData from "../src/draw_data";
-import { ShaderProgram } from "../src/shader_program";
-import { Transformator } from "../src/transformator";
+import DrawData from "./draw_data";
+import { ShaderProgram } from "./shader_program";
+import { Transformator } from "./transformator";
 
 export default class GameObject {
   private program!: ShaderProgram;
   private gl!: WebGL2RenderingContext;
   private vao!: WebGLVertexArrayObject;
+  private vaoInitialized: boolean;
 
   constructor(readonly drawData: DrawData, readonly transform: Transformator) {
     this.transform.setdDefaultScaling();
     this.transform.setDefaultTranslation();
+    this.vaoInitialized = false;
   }
 
   public setProgram(program: ShaderProgram) {
     this.program = program;
-    this.gl = program.gl;
+    if (!this.vaoInitialized) {
+      this.setupVao(this.program.gl);
+    }
+  }
+
+  private setupVao(gl: WebGL2RenderingContext) {
+    this.gl = gl;
 
     const vao = this.gl.createVertexArray(); 
     if (vao == null) {
         throw new Error("Could not create vertex array for object");
     }
     this.vao = vao;
+    this.vaoInitialized = true;
   }
 
   public start() {
@@ -79,17 +88,31 @@ export default class GameObject {
   public update() {
     this.gl.useProgram(this.program.program);
     this.gl.bindVertexArray(this.vao);
-    this.updateModelUniform();
+    this.updateUniforms();
     this.draw();
     // For children to implement. Like Unity's "Update" method
     this.onUpdate();
     this.gl.bindVertexArray(null);
   }
 
+  private updateUniforms() {
+    this.updateModelUniform();
+    this.updateNormalMatrixUniform();
+  }
+
   private updateModelUniform() {
     const modelMatrixUniform = this.program.getUniformLocation("mModel");
     if (modelMatrixUniform)
       this.gl.uniformMatrix4fv(modelMatrixUniform, false, this.transform.worldMatrix);
+  }
+
+  private updateNormalMatrixUniform() {
+    const normalMatrixUniform = this.program.getUniformLocation("mNormal");
+    if (!normalMatrixUniform)
+      return;
+
+    const normalMatrix = this.transform.buildNormalMatrix();
+    this.gl.uniformMatrix3fv(normalMatrixUniform, false, normalMatrix);
   }
 
   private draw() {

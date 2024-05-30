@@ -34,4 +34,18 @@ export default class VertexAttribute {
                           3 * Float32Array.BYTES_PER_ELEMENT)
     ]
   }
+
+  public static attributesForVertexWithNormals(gl: WebGL2RenderingContext) {
+    return [
+      new VertexAttribute("vertPosition", 3, gl.FLOAT, false, 
+                          9 * Float32Array.BYTES_PER_ELEMENT, 
+                          0),
+      new VertexAttribute("vertColor", 3, gl.FLOAT, false, 
+                          9 * Float32Array.BYTES_PER_ELEMENT, 
+                          3 * Float32Array.BYTES_PER_ELEMENT),
+      new VertexAttribute("vertNormal", 3, gl.FLOAT, false, 
+                          9 * Float32Array.BYTES_PER_ELEMENT, 
+                          6 * Float32Array.BYTES_PER_ELEMENT)
+    ]
+  }
 }

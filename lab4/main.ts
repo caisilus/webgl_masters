@@ -1,11 +1,13 @@
-import fragmentShader from "./shaders/shader.frag";
-import vertexShader from "./shaders/shader.vert";
+import guroFragmentShader from "./shaders/guro.frag";
+import guroVertexShader from "./shaders/guro.vert";
 import { ProgramBuilder } from "../src/program_builder";
 import { ShaderProgram } from "../src/shader_program";
 import { Transformator } from "../src/transformator";
 import Camera from "../src/camera";
 import GameObject from "../src/game_object";
 import Cube from "./cube";
+import { LightSource } from "../src/light_source";
+import { LightController } from "../src/light_controller";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -27,16 +29,36 @@ interface KeyDownDictionary {
 class Main {
   gl: WebGL2RenderingContext;
   program: ShaderProgram;
-  camera: Camera;
-  gameObjects: GameObject[];
+  camera!: Camera;
+  gameObjects!: GameObject[];
   keyHold: KeyDownDictionary = { "a": false, "d": false }
   pedestalInitialPosition: [number, number, number] = [2, 0, 0]
+  lightSource!: LightSource;
+  lightController!: LightController;
 
-  constructor(canvas: HTMLCanvasElement, readonly select: HTMLSelectElement) {
+  constructor(readonly canvas: HTMLCanvasElement, readonly rotationSelect: HTMLSelectElement,
+              readonly shadingSelect: HTMLSelectElement, readonly lightModelSelect: HTMLSelectElement, 
+              readonly linearSlider: HTMLInputElement, readonly quadraticSlider: HTMLInputElement) {
+    this.setupUI();
+
     this.gl = getGl(canvas);
     const programBuilder = new ProgramBuilder(this.gl);
-    this.program = programBuilder.buildProgram(vertexShader, fragmentShader);
+    this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
+    this.setupObjects();
+
+    this.start();
+    this.update();
+  }
+
+  setupUI() {
+    this.shadingSelect.addEventListener('change', (e) => {this.onShadingChanged()});
+    this.lightModelSelect.addEventListener('change', (e) => {this.onLightModelChanged()});
+    this.linearSlider.addEventListener('input', (e) => {this.onLinearAttenuationChanged()});
+    this.quadraticSlider.addEventListener('input', (e) => {this.onQuadraticAttenuationChanged()});
+  }
+
+  setupObjects() {
     this.gameObjects = [
       new Cube([0, 0, 0], [1.0, 1.0, 1.0], [1.0, 1.0, 0.0]),
       new Cube([0, 2.0, 0], [1.0, 1.0, 1.0], [1.0, 1.0, 0.0]),
@@ -49,10 +71,9 @@ class Main {
       object.transform.translate(this.pedestalInitialPosition[0], this.pedestalInitialPosition[1], 
         this.pedestalInitialPosition[2]));
 
-    this.camera = new Camera(canvas.clientWidth, canvas.clientHeight);
-
-    this.start();
-    this.update();
+    this.camera = new Camera(this.canvas.clientWidth, this.canvas.clientHeight);
+    this.lightSource = new LightSource([0, 20, 10]);
+    this.lightController = new LightController(this.program, this.lightSource);
   }
 
   useProgram() {
@@ -81,6 +102,11 @@ class Main {
   setUniforms() {
     this.updateViewUniform();
     this.updateProjUniform();
+    this.lightController.updateUniforms();
+    this.updateConstantAttenuation(1);
+    this.updateLinearAttenuation(this.linearSlider.valueAsNumber);
+    this.updateQuadraticAttenuation(this.quadraticSlider.valueAsNumber);
+    this.updateLightModel(this.lightModelSelect.selectedIndex);
   }
 
   updateViewUniform() {
@@ -93,6 +119,30 @@ class Main {
     const projMatrixUniform = this.program.getUniformLocation("mProj");
     if (projMatrixUniform)
       this.gl.uniformMatrix4fv(projMatrixUniform, false, this.camera.proj);
+  }
+
+  updateConstantAttenuation(value: number) {
+    const uniform = this.program.getUniformLocation("constantAttenuation");
+    if (uniform)
+      this.gl.uniform1f(uniform, value);
+  }
+
+  updateLinearAttenuation(value: number) {
+    const uniform = this.program.getUniformLocation("linearAttenuation");
+    if (uniform)
+      this.gl.uniform1f(uniform, value);
+  }
+
+  updateQuadraticAttenuation(value: number) {
+    const uniform = this.program.getUniformLocation("quadraticAttenuation");
+    if (uniform)
+      this.gl.uniform1f(uniform, value);
+  }
+
+  updateLightModel(index: number) {
+    const uniform = this.program.getUniformLocation("lightModel");
+    if (uniform)
+      this.gl.uniform1i(uniform, index);
   }
 
   update() {
@@ -112,7 +162,7 @@ class Main {
   }
 
   computeRotation() {
-    const selectedValue = this.select.options[this.select.selectedIndex].value;
+    const selectedValue = this.rotationSelect.options[this.rotationSelect.selectedIndex].value;
     switch (selectedValue) {
       case "eachCube":
         this.rotateEachCube();
@@ -177,13 +227,42 @@ class Main {
   keyUp(e: KeyboardEvent) {
     this.keyHold[e.key] = false;
   }
+
+  onShadingChanged() {
+    const selectedValue = this.shadingSelect.options[this.shadingSelect.selectedIndex].value;
+    console.log("new value: " + selectedValue);
+  }
+
+  onLightModelChanged() {
+    const selectedValue = this.lightModelSelect.selectedIndex;
+    console.log(selectedValue);
+    this.updateLightModel(selectedValue);
+  }
+
+  onLinearAttenuationChanged() {
+    const newValue = this.linearSlider.valueAsNumber / 100.0;
+    this.updateLinearAttenuation(newValue);
+  }
+
+  onQuadraticAttenuationChanged() {
+    const newValue = this.quadraticSlider.valueAsNumber / 100.0;
+    this.updateQuadraticAttenuation(newValue);
+  }
 }
 function main() {
   const canvas = document.querySelector("canvas#mycanvas") as HTMLCanvasElement;
   canvas.setAttribute("width", "600");
   canvas.setAttribute("height", "600");
-  const select = document.querySelector("select#rotationMode") as HTMLSelectElement;
-  const mainObj = new Main(canvas, select);
+
+  const rotationSelect = document.querySelector("select#rotationMode") as HTMLSelectElement;
+  const shadingSelect = document.querySelector("select#shading") as HTMLSelectElement;
+  const lightModelSelect = document.querySelector("select#lightModel") as HTMLSelectElement;
+
+  const linearSlider = document.querySelector("input#linearSlider") as HTMLInputElement;
+  const quadraticSlider = document.querySelector("input#quadraticSlider") as HTMLInputElement;
+
+  const mainObj = new Main(canvas, rotationSelect, shadingSelect, lightModelSelect, 
+    linearSlider, quadraticSlider);
 }
 
 main();

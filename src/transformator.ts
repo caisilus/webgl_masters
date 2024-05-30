@@ -1,4 +1,4 @@
-import { glMatrix, mat4, vec3 } from "gl-matrix";
+import { glMatrix, mat4, mat3, vec3 } from "gl-matrix";
 import { ShaderProgram } from "./shader_program";
 
 export class Transformator{
@@ -11,6 +11,8 @@ export class Transformator{
     private translationMatrix = mat4.create();
     private scalingMatrix = new Float32Array(16);
     private rotateMatrix = new Float32Array(16);
+    
+    private normalMatrix: null | mat3 = null;
 
     private initialForward: [number, number, number];
     forward: [number, number, number];
@@ -126,11 +128,18 @@ export class Transformator{
         this.buildWorldMatrix();
     }
 
-    buildWorldMatrix(){
+    buildWorldMatrix() {
         // T * R * S
         var translateRotateMatrix = new Float32Array(16);
         mat4.mul(translateRotateMatrix, this.translationMatrix, this.rotateMatrix);
         mat4.mul(this.matWorld, translateRotateMatrix, this.scalingMatrix);
+    }
+
+    buildNormalMatrix() : mat3 {
+        this.normalMatrix = mat3.create();
+        mat3.normalFromMat4(this.normalMatrix, this.worldMatrix);
+
+        return this.normalMatrix;
     }
 
     position() {
