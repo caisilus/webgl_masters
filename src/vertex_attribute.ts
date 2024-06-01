@@ -48,4 +48,21 @@ export default class VertexAttribute {
                           6 * Float32Array.BYTES_PER_ELEMENT)
     ]
   }
+
+  public static attributesForVertexWithTexCoords(gl: WebGL2RenderingContext) {
+    return [
+      new VertexAttribute("vertPosition", 3, gl.FLOAT, false, 
+                          11 * Float32Array.BYTES_PER_ELEMENT, 
+                          0),
+      new VertexAttribute("vertColor", 3, gl.FLOAT, false, 
+                          11 * Float32Array.BYTES_PER_ELEMENT, 
+                          3 * Float32Array.BYTES_PER_ELEMENT),
+      new VertexAttribute("vertTexCoord", 2, gl.FLOAT, false, 
+                          11 * Float32Array.BYTES_PER_ELEMENT, 
+                          6 * Float32Array.BYTES_PER_ELEMENT),
+      new VertexAttribute("vertNormal", 3, gl.FLOAT, false, 
+                          11 * Float32Array.BYTES_PER_ELEMENT, 
+                          8 * Float32Array.BYTES_PER_ELEMENT),
+    ]
+  }
 }

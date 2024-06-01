@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>!!Graphics</title>
+        <style>
+            canvas {
+                padding: 0;
+                margin: auto;
+                display: block;
+                width: 800px;
+            }
+            div {
+                padding: 10px;
+                border-bottom: solid black 1px;
+            }
+        </style>
+        <script src="./main.ts" type="module"></script>
+    </head>
+    <body>
+        <a href="../index.html">На главную</a>
+        <canvas id="mycanvas" width="800" height="600"></canvas>
+        <div>
+            <select id="shading">
+                <option value="gouraud">Шейдинг Гуро</option>
+                <option value="phong">Шейдинг Фонга</option>
+            </select>
+            <select id="rotationMode">
+                <option value="eachCube">Поворот кубов вокруг своей оси</option>
+                <option value="combined">Поворот пъедестала вокруг своей оси</option>
+                <option value="combinedY">Поворот пъедестала вокруг оси Y</option>
+            </select>
+            <label>Линейное затухание</label>
+            <input id="linearSlider" type="range">
+            <label>Квадратичное затухание</label>
+            <input id="quadraticSlider" type="range">
+            <select id="lightModel">
+                <option value="lambert">Модель Ламберта</option>
+                <option value="phong">Модель Фонга</option>
+                <option value="blinPhong">Модель Блина-Фонга</option>
+            </select>
+        </div>
+        <label>Текстура номера</label>
+        <input id="numberTextureSlider" type="range">
+        <label>Текстура материала</label>
+    </body>
+</html>

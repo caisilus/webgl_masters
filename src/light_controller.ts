@@ -3,6 +3,9 @@ import { ShaderProgram } from "./shader_program";
 
 export class LightController {
   gl: WebGL2RenderingContext;
+  constantAttenuation: number = 0;
+  linearAttenuation: number = 0;
+  quadraticAttenuation: number = 0;
 
   constructor(readonly program: ShaderProgram, readonly lightSource: LightSource) {
     this.gl = program.gl;
@@ -13,6 +16,7 @@ export class LightController {
     this.updateAmbient();
     this.updateDiffuse();
     this.updateSpecular();
+    this.updateAttenuation();
   }
 
   private updatePosition() {
@@ -39,5 +43,21 @@ export class LightController {
     const uniform = this.program.getUniformLocation("specularLightColor");
     if (uniform)
       this.gl.uniform3fv(uniform, this.lightSource.specularColor);
+  }
+
+  updateAttenuation() {
+    const constantUnigorm = this.program.getUniformLocation("constantAttenuation");
+    if (constantUnigorm)
+      this.gl.uniform1f(constantUnigorm, this.constantAttenuation);
+
+    const linearUniform = this.program.getUniformLocation("linearAttenuation");
+    if (linearUniform) {
+      this.gl.uniform1f(linearUniform, this.linearAttenuation);
+    }
+
+    const quadraticUniform = this.program.getUniformLocation("quadraticAttenuation");
+    if (quadraticUniform) {
+      this.gl.uniform1f(quadraticUniform, this.quadraticAttenuation);
+    }
   }
 }
