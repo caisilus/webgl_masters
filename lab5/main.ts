@@ -11,9 +11,13 @@ import { LightController } from "../src/light_controller";
 import Goodman from "../static/images/goodman.png";
 import Cat from "../static/images/cat.png";
 import Wood from "../static/images/WoodTex.jpg";
-import First from "../static/images/tex_cube_1.png";
-import Second from "../static/images/tex_cube_2.png";
-import Third from "../static/images/tex_cube_3.png";
+// import First from "../static/images/tex_cube_1.png";
+// import Second from "../static/images/tex_cube_2.png";
+// import Third from "../static/images/tex_cube_3.png";
+import First from "../static/images/number_one.jpg";
+import Second from "../static/images/number_two.png";
+import Third from "../static/images/number_three.png";
+import { AssetLoader } from "../src/asset_loader";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -41,6 +45,7 @@ class Main {
   pedestalInitialPosition: [number, number, number] = [2, 0, 0]
   lightSource!: LightSource;
   lightController!: LightController;
+  assetLoader: AssetLoader;
 
   constructor(readonly canvas: HTMLCanvasElement, readonly rotationSelect: HTMLSelectElement,
               readonly shadingSelect: HTMLSelectElement, readonly lightModelSelect: HTMLSelectElement, 
@@ -52,10 +57,14 @@ class Main {
     const programBuilder = new ProgramBuilder(this.gl);
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
-    this.setupObjects();
+    this.assetLoader = new AssetLoader();
+    this.assetLoader.loadImages([First, Second, Third, Goodman, Cat, Wood]).then(() => {
+      console.log("Assets loaded!");
+      this.setupObjects();
 
-    this.start();
-    this.update();
+      this.start();
+      this.update();
+    });
   }
 
   setupUI() {

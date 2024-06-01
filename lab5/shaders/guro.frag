@@ -19,4 +19,5 @@ void main()
     vec4 mixedTextures = mix(tex_col1, tex_col2, texturesMix);
     fragColor = vec4(color, 1.0) * mixedTextures;
     fragColor.xyz = illumination * fragColor.xyz;
+    // fragColor = vec4(0.0) * mixedTextures;
 }

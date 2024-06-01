@@ -1,5 +1,6 @@
 import {Texture} from "../src/texture";
 import { ShaderProgram } from "../src/shader_program";
+import { AssetLoader } from "../src/asset_loader";
 
 export class TextureController{
     private texturesMixLocation: WebGLUniformLocation | null;
@@ -11,12 +12,12 @@ export class TextureController{
 
     private gl: WebGL2RenderingContext;
 
-    constructor(readonly program: ShaderProgram) {
+    constructor(readonly program: ShaderProgram, readonly index = 0) {
       this.gl = program.gl;
       this.program = program;
       this.texturesMixLocation = this.program.getUniformLocation("texturesMix");
-      this.texture1 = new Texture(this.program, "u_texture1", 0);
-      this.texture2 = new Texture(this.program, "u_texture2", 1);
+      this.texture1 = new Texture(this.program, "u_texture1", index);
+      this.texture2 = new Texture(this.program, "u_texture2", index + 1);
       this.textures_mix = 1.0;
       this.set_textures_mix();
     }
@@ -30,19 +31,11 @@ export class TextureController{
     }
 
     load_textures(url: string, url2: string){
-      let img1 = new Image();
-      img1.crossOrigin = 'anonymous'
-      img1.src = url;
-      img1.onload =() => {
-        return this.texture1.loadImage(img1);
-      };
-
-      let img2 = new Image();
-      img2.crossOrigin = 'anonymous'
-      img2.src = url2;
-      img2.onload =() => {
-        return this.texture2.loadImage(img2);
-      };
+      const img1 = AssetLoader.getImage(url);
+      const img2 = AssetLoader.getImage(url2);
+      if (!img1 || !img2) return;
+      this.texture1.loadImage(img1);
+      this.texture2.loadImage(img2);
     }
 
     bind_textures(){

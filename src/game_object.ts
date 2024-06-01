@@ -89,9 +89,10 @@ export default class GameObject {
     this.gl.useProgram(this.program.program);
     this.gl.bindVertexArray(this.vao);
     this.updateUniforms();
+    this.beforeUpdate();
     this.draw();
-    // For children to implement. Like Unity's "Update" method
     this.onUpdate();
+    // For children to implement. Like Unity's "Update" method
     this.gl.bindVertexArray(null);
   }
 
@@ -126,5 +127,6 @@ export default class GameObject {
   }
 
   protected onStart() {}
+  protected beforeUpdate() {}
   protected onUpdate() {}
 }

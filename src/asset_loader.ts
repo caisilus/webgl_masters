@@ -1,13 +1,11 @@
 export class AssetLoader {
-  urlsToLoadedImages: Map<string, HTMLImageElement> = new Map();
-  constructor() {}
+  static instance: AssetLoader;
 
-  async loadImages(urls: string[]) {
-    try {
-      await Promise.all(urls.map((url) => this.loadImage(url)));
-    } catch (error) {
-      console.error(error);
-    }
+  urlsToLoadedImages: Map<string, HTMLImageElement> = new Map();
+  constructor() { AssetLoader.instance = this; }
+
+  loadImages(urls: string[]) {
+    return Promise.all(urls.map((url) => this.loadImage(url)));
   }
 
   loadImage(url: string) {
@@ -23,7 +21,7 @@ export class AssetLoader {
     });
   }
   
-  getImage(url: string) {
-    return this.urlsToLoadedImages.get(url);
+  static getImage(url: string) {
+    return this.instance.urlsToLoadedImages.get(url);
   }
 }

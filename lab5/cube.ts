@@ -8,7 +8,7 @@ export default class Cube extends GameObject {
   public textureController!: TextureController;
 
   constructor(position: Array<number>, scale: Array<number>, color: Array<number>, 
-              readonly texture1: string, readonly texture2: string) {
+              readonly texture1: string, readonly texture2: string, readonly index = 0) {
     super(new CubeWithTexCoords(color), new Transformator());
     this.transform.translate(position[0], position[1], position[2]);
     this.transform.scale(scale[0], scale[1], scale[2]);
@@ -16,16 +16,17 @@ export default class Cube extends GameObject {
 
   public setProgram(program: ShaderProgram) {
     super.setProgram(program);
-    this.textureController = new TextureController(program);
+    this.textureController = new TextureController(program, this.index);
   }
 
   protected onStart(): void {
+    console.log("on start cube");
     this.textureController.load_textures(this.texture1, this.texture2);
     this.textureController.textures_mix = 0.0;
     this.textureController.bind_textures();
   }
 
-  protected onUpdate(): void {
+  protected beforeUpdate(): void {
     this.textureController.bind_textures();
   }
 }
