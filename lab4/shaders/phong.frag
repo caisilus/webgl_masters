@@ -2,15 +2,9 @@
 
 precision mediump float;
 
-in vec3 vertPosition;
-in vec3 vertColor;
-in vec3 vertNormal;
-in vec2 vertTexCoord;
-
-uniform mat4 mProj;  // projection matrix, e.g. perspective
-uniform mat4 mView;  // 'camera' position
-uniform mat4 mModel; // affine transformations
-uniform mat3 mNormal;
+in vec3 position;
+in vec3 color;
+in vec3 normal;
 
 uniform vec3 lightPosition;
 uniform vec3 ambientLightColor;
@@ -23,31 +17,24 @@ uniform float quadraticAttenuation;
 
 uniform int lightModel;
 
-out vec3 color;
-out vec3 illumination;
-out vec2 fragTexCoord;
+out vec4 fragColor;
 
 const float shininess = 16.0;
 
 void main() {
-  vec4 vertextPositionEye4 = mModel * vec4(vertPosition, 1.0);
-  vec3 vertextPositionEye3 = vertextPositionEye4.xyz / vertextPositionEye4.w;
-
-  vec3 lightDirection = normalize(lightPosition - vertextPositionEye3);
-
-  vec3 normal = normalize(mNormal * vertNormal);
+  vec3 lightDirection = normalize(lightPosition - position);
 
   float diffuseLightDot = max(dot(normal, lightDirection), 0.0);
 
   vec3 reflectionDirection = normalize(reflect(-lightDirection, normal));
-  vec3 viewDirection = normalize(-vertextPositionEye3);
+  vec3 viewDirection = normalize(-position);
   float specularLightDot = max(dot(reflectionDirection, viewDirection), 0.0);
   float specularLightParam = pow(specularLightDot, shininess);
-
 
   float distanceToLight = length(lightDirection);
   float attenuation = 1.0 / (constantAttenuation + linearAttenuation * distanceToLight + quadraticAttenuation * distanceToLight * distanceToLight);
 
+  vec3 illumination = vec3(0.0);
   // Lambert
   if (lightModel == 0) {
     illumination = ambientLightColor + diffuseLightColor * diffuseLightDot * attenuation;
@@ -61,9 +48,22 @@ void main() {
     float blinnPhongParam = pow(blinnPhong, shininess / 2.0);
 
     illumination = (ambientLightColor + diffuseLightColor * diffuseLightDot + specularLightColor * blinnPhongParam) * attenuation;
-  }   
+  // Toon shading
+  } else if (lightModel == 3) {
+    float numberOfShades = 16.0;
+    vec3 ambientLightShade = ceil(ambientLightColor * numberOfShades) / numberOfShades;
+    float diffuseLightShade = ceil(diffuseLightDot * numberOfShades) / numberOfShades;
+    float specularLightShade = ceil(specularLightParam * numberOfShades) / numberOfShades;
+    vec3 lightWeighting = ambientLightShade + diffuseLightShade + specularLightShade;
 
-  gl_Position = mProj * mView * mModel * vec4(vertPosition, 1);
-  color = vertColor;
-  fragTexCoord = vertTexCoord;
+    illumination = lightWeighting * attenuation;
+
+    // float numberOfShades = 16.0;
+    // float shade = ceil(diffuseLightDot * numberOfShades) / numberOfShades;
+
+    // illumination = vec3(shade);
+  } 
+  fragColor = vec4(illumination * color, 1.0);
+  // color = vec3(diffuseLightDot, diffuseLightDot, diffuseLightDot);
+  // color = vec3(1.0, 1.0, 1.0);
 }

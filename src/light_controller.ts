@@ -7,7 +7,7 @@ export class LightController {
   linearAttenuation: number = 0;
   quadraticAttenuation: number = 0;
 
-  constructor(readonly program: ShaderProgram, readonly lightSource: LightSource) {
+  constructor(public program: ShaderProgram, readonly lightSource: LightSource) {
     this.gl = program.gl;
   }
 

@@ -4,7 +4,7 @@ export class LightSource {
   transformator: Transformator;
 
   constructor(position: [number, number, number],
-              public readonly ambientColor: [number, number, number] = [0.1, 0.1, 0.1],
+              public readonly ambientColor: [number, number, number] = [0.2, 0.2, 0.2],
               public readonly diffuseColor: [number, number, number] = [0.7, 0.7, 0.7],
               public readonly specularColor: [number, number, number] = [1.0, 1.0, 1.0]
   ) {

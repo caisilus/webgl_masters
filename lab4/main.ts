@@ -1,5 +1,7 @@
 import guroFragmentShader from "./shaders/guro.frag";
 import guroVertexShader from "./shaders/guro.vert";
+import phongFragmentShader from "./shaders/phong.frag";
+import phongVertexShader from "./shaders/phong.vert";
 import { ProgramBuilder } from "../src/program_builder";
 import { ShaderProgram } from "../src/shader_program";
 import { Transformator } from "../src/transformator";
@@ -29,6 +31,8 @@ interface KeyDownDictionary {
 class Main {
   gl: WebGL2RenderingContext;
   program: ShaderProgram;
+  guroProgram: ShaderProgram;
+  phongProgram: ShaderProgram;
   camera!: Camera;
   gameObjects!: GameObject[];
   keyHold: KeyDownDictionary = { "a": false, "d": false }
@@ -43,7 +47,9 @@ class Main {
 
     this.gl = getGl(canvas);
     const programBuilder = new ProgramBuilder(this.gl);
-    this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
+    this.guroProgram = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
+    this.phongProgram = programBuilder.buildProgram(phongVertexShader, phongFragmentShader);
+    this.program = this.guroProgram;
 
     this.setupObjects();
 
@@ -230,7 +236,18 @@ class Main {
 
   onShadingChanged() {
     const selectedValue = this.shadingSelect.options[this.shadingSelect.selectedIndex].value;
-    console.log("new value: " + selectedValue);
+    switch(selectedValue) {
+      case "gouraud":
+        this.program = this.guroProgram;
+        break;
+      case "phong":
+        this.program = this.phongProgram;
+        break;
+    }
+    this.gl.useProgram(this.program.program);
+    this.gameObjects.forEach(obj => obj.setProgram(this.program));
+    this.lightController.program = this.program;
+    this.setUniforms();
   }
 
   onLightModelChanged() {
