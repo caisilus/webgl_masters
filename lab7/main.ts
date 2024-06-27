@@ -8,7 +8,7 @@ import GameObject from "../src/game_object";
 import { LightSource } from "../src/light_source";
 import { LightController } from "../src/light_controller";
 import { AssetLoader } from "../src/asset_loader";
-import BumpTexture from "../static/images/bump0.jpeg";
+import BumpTexture from "../static/lab7/Stone-1.png";
 import SphereObj from "../static/obj/model.obj";
 import { TexturedObject } from "../src/textured_object";
 import { vec2 } from "gl-matrix";
