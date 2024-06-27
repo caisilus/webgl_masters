@@ -9,9 +9,11 @@ import { LightSource } from "../src/light_source";
 import { LightController } from "../src/light_controller";
 import { AssetLoader } from "../src/asset_loader";
 import BumpTexture from "../static/images/bump0.jpeg";
-import SphereObj from "../static/obj/model.obj";
+import TreeTexture from "../static/lab7/Tree.png";
+import BarrelTexture from "../static/lab7/Barrel.png";
+import BarrelObj from "../static/lab7/Barrel.obj";
+import TreeObj from "../static/lab7/Tree.obj";
 import { TexturedObject } from "../src/textured_object";
-import { vec2 } from "gl-matrix";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -48,8 +50,8 @@ class Main {
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
     this.assetLoader = new AssetLoader();
-    this.assetLoader.loadObj(SphereObj).then(() => {
-      this.assetLoader.loadImages([BumpTexture]).then(() => {
+    this.assetLoader.loadObjs([BarrelObj, TreeObj]).then(() => {
+      this.assetLoader.loadImages([TreeTexture, BarrelTexture]).then(() => {
         console.log("Assets loaded!");
         this.setupObjects();
 
@@ -70,8 +72,11 @@ class Main {
 
     color = color.map(c => c / 255.0);
     this.gameObjects = [new TexturedObject([0, 0, 0], [1.0, 1.0, 1.0], color,
-      SphereObj, BumpTexture
+      BarrelObj, BarrelTexture
+    ), new TexturedObject([-2, -1, 0], [1.0, 1.0, 1.0], color,
+      TreeObj, TreeTexture
     )]
+
 
     this.gameObjects.forEach(object => object.setProgram(this.program));
 
