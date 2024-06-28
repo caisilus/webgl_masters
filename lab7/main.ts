@@ -14,6 +14,7 @@ import BarrelTexture from "../static/lab7/Barrel.png";
 import BarrelObj from "../static/lab7/Barrel.obj";
 import TreeObj from "../static/lab7/Tree.obj";
 import { TexturedObject } from "../src/textured_object";
+import { MovingObject } from "../src/moving_object";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -71,8 +72,8 @@ class Main {
     let color = [217, 123, 9]
 
     color = color.map(c => c / 255.0);
-    this.gameObjects = [new TexturedObject([0, 0, 0], [1.0, 1.0, 1.0], color,
-      BarrelObj, BarrelTexture
+    this.gameObjects = [new MovingObject([0, 0, 0], [1.0, 1.0, 1.0], color,
+      BarrelObj, BarrelTexture, [0.001,0.001,0.001]
     ), new TexturedObject([-2, -1, 0], [1.0, 1.0, 1.0], color,
       TreeObj, TreeTexture
     )]
