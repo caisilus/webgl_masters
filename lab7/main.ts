@@ -15,6 +15,15 @@ import BarrelObj from "../static/lab7/Barrel.obj";
 import TreeObj from "../static/lab7/Tree.obj";
 import { TexturedObject } from "../src/textured_object";
 import { MovingObject } from "../src/moving_object";
+import { ControlledObject } from "../src/controlled_object";
+import FieldObj from "../static/lab7/Field.obj"
+import FieldTexture from "../static/lab7/Field.png"
+import TankObj from "../static/lab7/Tanks.obj"
+import TankTexture from "../static/lab7/Tank.png"
+import StoneObj from "../static/lab7/Stone-1.obj"
+import StoneTexture from "../static/lab7/Stone-1.png"
+import ChristmasTreeObj from "../static/lab7/ChristmasTree.obj"
+import ChristmasTreeTexture from "../static/lab7/ChristmasTree.png"
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -51,8 +60,8 @@ class Main {
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
     this.assetLoader = new AssetLoader();
-    this.assetLoader.loadObjs([BarrelObj, TreeObj]).then(() => {
-      this.assetLoader.loadImages([TreeTexture, BarrelTexture]).then(() => {
+    this.assetLoader.loadObjs([BarrelObj, TreeObj, FieldObj, TankObj, StoneObj, ChristmasTreeObj]).then(() => {
+      this.assetLoader.loadImages([TreeTexture, BarrelTexture, FieldTexture, TankTexture, StoneTexture, ChristmasTreeTexture]).then(() => {
         console.log("Assets loaded!");
         this.setupObjects();
 
@@ -72,10 +81,24 @@ class Main {
     let color = [217, 123, 9]
 
     color = color.map(c => c / 255.0);
-    this.gameObjects = [new MovingObject([0, 0, 0], [1.0, 1.0, 1.0], color,
-      BarrelObj, BarrelTexture, [0.001,0.001,0.001]
-    ), new TexturedObject([-2, -1, 0], [1.0, 1.0, 1.0], color,
+    this.gameObjects = [new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      BarrelObj, BarrelTexture, [0.01,0,0]
+    ), new TexturedObject([-2, -1, -55], [1.0, 1.0, 1.0], color,
       TreeObj, TreeTexture
+    ),new TexturedObject([-20, -1, -50], [1.0, 1.0, 1.0], color,
+      TreeObj, TreeTexture
+    ),new TexturedObject([-22, -1, -50], [1.0, 1.0, 1.0], color,
+      TreeObj, TreeTexture
+    ),new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      TankObj, TankTexture, [0,0,0]
+    ),new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      StoneObj, StoneTexture, [-0.01,0,0]
+    ),new TexturedObject([-10, -1, -40], [1.0, 1.0, 1.0], color,
+      ChristmasTreeObj, ChristmasTreeTexture
+    ),new TexturedObject([-21, -1, -40], [1.0, 1.0, 1.0], color,
+      TreeObj, TreeTexture
+    ),new TexturedObject([-2, -1, -50], [1.0, 1.0, 1.0], color,
+      FieldObj, FieldTexture
     )]
 
 

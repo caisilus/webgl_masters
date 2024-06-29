@@ -40,6 +40,6 @@ void main() {
   vec3 illumination = ambientLightColor + 
     attenuation * (diffuseLightColor * diffLightDot + specularLightColor * specLightParam); 
 
-  fragColor = vec4(color, 1.0) * textColor;
+  fragColor = textColor;
   fragColor.xyz = illumination * fragColor.xyz;
 }

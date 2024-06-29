@@ -55,6 +55,7 @@ export class ObjParser {
 
     switch (keyword) {
       case "v":
+        console.log(this.vertices);
         this.vertices.push(parts.map(parseFloat));
         break;
       case "vn":
@@ -73,7 +74,7 @@ export class ObjParser {
 
         break;
       default:
-        console.warn("unhandled keyword:", keyword); // eslint-disable-line no-console
+        console.warn("unhandled keyword:", keyword); 
         break;
     }
   }
