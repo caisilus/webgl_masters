@@ -34,7 +34,7 @@ export class TexturedObject extends GameObject{
     if (!image)
       throw new Error("asdsadasd");
 
-    this.texture.loadImage(image, false);
+    this.texture.loadImage(image, true);
     this.texture.bind();
   }
 

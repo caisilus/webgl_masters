@@ -34,6 +34,10 @@ export class AssetLoader {
         this.urlsToLoadedObj.set(url, objData);
       });
   }
+
+  loadObjs(urls: string[]) {
+    return Promise.all(urls.map((url) => this.loadObj(url)));
+  }
   
   static getImage(url: string) {
     return this.instance.urlsToLoadedImages.get(url);

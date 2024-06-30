@@ -8,10 +8,21 @@ import GameObject from "../src/game_object";
 import { LightSource } from "../src/light_source";
 import { LightController } from "../src/light_controller";
 import { AssetLoader } from "../src/asset_loader";
-import BumpTexture from "../static/lab7/Stone-1.png";
-import SphereObj from "../static/obj/model.obj";
+import BumpTexture from "../static/images/bump0.jpeg";
+import FirewoodObj from "../static/lab7/firewood.obj";
+import TreeObj from "../static/lab7/tree_3.obj";
 import { TexturedObject } from "../src/textured_object";
-import { vec2 } from "gl-matrix";
+import { MovingObject } from "../src/moving_object";
+import { ControlledObject } from "../src/controlled_object";
+import FieldObj from "../static/lab7/Field.obj"
+import FieldTexture from "../static/lab7/Field.png"
+import TankObj from "../static/lab7/Tanks.obj"
+import TankTexture from "../static/lab7/Tank.png"
+import StoneObj from "../static/lab7/Stone-1.obj"
+import StoneTexture from "../static/lab7/Stone-1.png"
+import Stone2Obj from "../static/lab7/Stone-2.obj"
+import RockWellObj from "../static/lab7/rock_well.obj"
+import LowPolyTex from "../static/lab7/mtl.png"
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -48,8 +59,8 @@ class Main {
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
     this.assetLoader = new AssetLoader();
-    this.assetLoader.loadObj(SphereObj).then(() => {
-      this.assetLoader.loadImages([BumpTexture]).then(() => {
+    this.assetLoader.loadObjs([FirewoodObj, TreeObj, FieldObj, TankObj, StoneObj, RockWellObj, Stone2Obj]).then(() => {
+      this.assetLoader.loadImages([FieldTexture, TankTexture, StoneTexture, LowPolyTex]).then(() => {
         console.log("Assets loaded!");
         this.setupObjects();
 
@@ -69,9 +80,26 @@ class Main {
     let color = [217, 123, 9]
 
     color = color.map(c => c / 255.0);
-    this.gameObjects = [new TexturedObject([0, 0, 0], [1.0, 1.0, 1.0], color,
-      SphereObj, BumpTexture
+    this.gameObjects = [new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      FirewoodObj, LowPolyTex, [0.01,0,0]
+    ), new TexturedObject([-2, -1, -75], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new TexturedObject([-20, -1, -70], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new TexturedObject([10, -1, -70], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      StoneObj, StoneTexture, 
+    ),new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      Stone2Obj, StoneTexture, [-0.01,0,0]
+    ),new TexturedObject([-10, -1, -40], [1.0, 1.0, 1.0], color,
+      RockWellObj, LowPolyTex
+    ),new TexturedObject([-21, -1, -40], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new TexturedObject([-2, -1, -50], [1.0, 1.0, 1.0], color,
+      FieldObj, FieldTexture
     )]
+
 
     this.gameObjects.forEach(object => object.setProgram(this.program));
 

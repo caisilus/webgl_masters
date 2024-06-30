@@ -67,6 +67,6 @@ void main() {
   }
   illumination += sumDiffuse + sumSpecular; 
 
-  fragColor = vec4(color, 1.0) * textColor;
+  fragColor = textColor;
   fragColor.xyz = illumination * fragColor.xyz;
 }
