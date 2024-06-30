@@ -4,17 +4,21 @@
 precision highp float;
 #endif
 
-uniform vec3 lightPosition;
-uniform vec3 ambientLightColor;
-uniform vec3 diffuseLightColor;
-uniform vec3 specularLightColor;
+uniform int numPointLights;
+uniform vec3[10] pointLightPositions;
+uniform vec3[10] pointLightAmbientColors;
+uniform vec3[10] pointLightDiffuseColors;
+uniform vec3[10] pointLightSpecularColors;
+
+uniform bool useAmbientLight;
+uniform bool usePointLight;
+// uniform bool useSpotLight;
 
 uniform float constantAttenuation;
 uniform float linearAttenuation;
 uniform float quadraticAttenuation;
 
 uniform sampler2D u_texture;
-// uniform vec2 textureSize;
 
 in vec2 texCoord;
 in vec3 color;
@@ -26,19 +30,42 @@ out vec4 fragColor;
 void main() { 
   vec4 textColor = texture(u_texture, texCoord);
 
-  float d = distance(lightPosition, position);
-  vec3 dirToLight = normalize(lightPosition - position); // l
-  vec3 reflVec = normalize(reflect(-dirToLight, normal)); // r
-  vec3 dirToView = normalize(0.0 - position); // v
+  vec3 sumAmbient = vec3(0.0, 0.0, 0.0);
+  vec3 sumDiffuse = vec3(0.0, 0.0, 0.0);
+  vec3 sumSpecular = vec3(0.0, 0.0, 0.0);
 
-  float diffLightDot = max(dot(normal, dirToLight),0.0);
-  float specLightDot = max(dot(reflVec, dirToView),0.0);
-  float specLightParam = pow(specLightDot, 16.0);
+  if (usePointLight) {
+    for (int i = 0; i < numPointLights; i++) {
+      // ambient
+      sumAmbient = sumAmbient + pointLightAmbientColors[i];
 
-  float attenuation = 1.0 / (constantAttenuation + linearAttenuation * d + quadraticAttenuation * d * d);
+      float d = distance(pointLightPositions[i], position);
+      vec3 dirToLight = normalize(pointLightPositions[i] - position); // l
+      vec3 reflVec = normalize(reflect(-dirToLight, normal)); // r
+      vec3 dirToView = normalize(0.0 - position); // v
 
-  vec3 illumination = ambientLightColor + 
-    attenuation * (diffuseLightColor * diffLightDot + specularLightColor * specLightParam); 
+      float attenuation = 1.0 / (constantAttenuation + linearAttenuation * d + quadraticAttenuation * d * d);
+
+      // diffuse
+      float diffLightDot = max(dot(normal, dirToLight),0.0);
+      sumDiffuse += attenuation * pointLightDiffuseColors[i] * diffLightDot;
+
+      // specular
+      float specLightDot = max(dot(reflVec, dirToView),0.0);
+      float specLightParam = pow(specLightDot, 16.0);
+      sumSpecular += attenuation * pointLightSpecularColors[i] * specLightParam;
+    }
+  }
+
+  // sumAmbient = sumAmbient / float(numPointLights);
+  sumDiffuse = clamp(sumDiffuse, 0.0, 1.0);
+  sumSpecular = clamp(sumSpecular, 0.0, 1.0);
+
+  vec3 illumination = vec3(0.0, 0.0, 0.0);
+  if (useAmbientLight) {
+    illumination += sumAmbient;
+  }
+  illumination += sumDiffuse + sumSpecular; 
 
   fragColor = vec4(color, 1.0) * textColor;
   fragColor.xyz = illumination * fragColor.xyz;

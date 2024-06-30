@@ -78,6 +78,7 @@ class Main {
     this.camera = new Camera(this.canvas.clientWidth, this.canvas.clientHeight);
     this.lightSource = new LightSource([10, 10, 10]);
     this.lightController = new LightController(this.program, this.lightSource);
+    this.lightController.addLightSource(new LightSource([-10, 10, -10]))
   }
 
   useProgram() {
@@ -106,6 +107,7 @@ class Main {
     this.lightController.constantAttenuation = 1.0;
     this.lightController.linearAttenuation = 0.02;
     this.lightController.quadraticAttenuation = 0.0;
+    this.lightController.setActiveLights(true, true, false);
     this.lightController.updateUniforms();
     this.updateImageSize();
   }
