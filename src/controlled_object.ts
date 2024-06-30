@@ -2,10 +2,9 @@ import { MovingObject } from "./moving_object";
 
 export class ControlledObject extends MovingObject {
   constructor(position: Array<number>, scale: Array<number>, color: Array<number>,
-    objUrl: string, texUrl: string, velocity: Array<number>) {
+    objUrl: string, texUrl: string) {
 
-    super(position, scale, color, objUrl, texUrl, velocity);
-    this.velocity = [0,0,0];
+    super(position, scale, color, objUrl, texUrl, [0,0,0]);
     this.setupKeyboardControls();
   }
 
@@ -13,10 +12,10 @@ export class ControlledObject extends MovingObject {
     window.addEventListener('keydown', (event) => {
       switch (event.key) {
         case 'ArrowUp':
-          this.velocity[2] = 0.1; 
+          this.velocity[2] = - 0.1; 
           break;
         case 'ArrowDown':
-          this.velocity[2] = -0.1; 
+          this.velocity[2] = 0.1; 
           break;
         case 'ArrowLeft':
           this.velocity[0] = -0.1; 

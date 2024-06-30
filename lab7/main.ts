@@ -9,10 +9,8 @@ import { LightSource } from "../src/light_source";
 import { LightController } from "../src/light_controller";
 import { AssetLoader } from "../src/asset_loader";
 import BumpTexture from "../static/images/bump0.jpeg";
-import TreeTexture from "../static/lab7/Tree.png";
-import BarrelTexture from "../static/lab7/Barrel.png";
-import BarrelObj from "../static/lab7/Barrel.obj";
-import TreeObj from "../static/lab7/Tree.obj";
+import FirewoodObj from "../static/lab7/firewood.obj";
+import TreeObj from "../static/lab7/tree_3.obj";
 import { TexturedObject } from "../src/textured_object";
 import { MovingObject } from "../src/moving_object";
 import { ControlledObject } from "../src/controlled_object";
@@ -22,8 +20,9 @@ import TankObj from "../static/lab7/Tanks.obj"
 import TankTexture from "../static/lab7/Tank.png"
 import StoneObj from "../static/lab7/Stone-1.obj"
 import StoneTexture from "../static/lab7/Stone-1.png"
-import ChristmasTreeObj from "../static/lab7/ChristmasTree.obj"
-import ChristmasTreeTexture from "../static/lab7/ChristmasTree.png"
+import Stone2Obj from "../static/lab7/Stone-2.obj"
+import RockWellObj from "../static/lab7/rock_well.obj"
+import LowPolyTex from "../static/lab7/mtl.png"
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -60,8 +59,8 @@ class Main {
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
     this.assetLoader = new AssetLoader();
-    this.assetLoader.loadObjs([BarrelObj, TreeObj, FieldObj, TankObj, StoneObj, ChristmasTreeObj]).then(() => {
-      this.assetLoader.loadImages([TreeTexture, BarrelTexture, FieldTexture, TankTexture, StoneTexture, ChristmasTreeTexture]).then(() => {
+    this.assetLoader.loadObjs([FirewoodObj, TreeObj, FieldObj, TankObj, StoneObj, RockWellObj, Stone2Obj]).then(() => {
+      this.assetLoader.loadImages([FieldTexture, TankTexture, StoneTexture, LowPolyTex]).then(() => {
         console.log("Assets loaded!");
         this.setupObjects();
 
@@ -82,21 +81,21 @@ class Main {
 
     color = color.map(c => c / 255.0);
     this.gameObjects = [new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
-      BarrelObj, BarrelTexture, [0.01,0,0]
-    ), new TexturedObject([-2, -1, -55], [1.0, 1.0, 1.0], color,
-      TreeObj, TreeTexture
-    ),new TexturedObject([-20, -1, -50], [1.0, 1.0, 1.0], color,
-      TreeObj, TreeTexture
-    ),new TexturedObject([-22, -1, -50], [1.0, 1.0, 1.0], color,
-      TreeObj, TreeTexture
+      FirewoodObj, LowPolyTex, [0.01,0,0]
+    ), new TexturedObject([-2, -1, -75], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new TexturedObject([-20, -1, -70], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
+    ),new TexturedObject([10, -1, -70], [1.0, 1.0, 1.0], color,
+      TreeObj, LowPolyTex
     ),new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
-      TankObj, TankTexture, [0,0,0]
+      StoneObj, StoneTexture, 
     ),new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
-      StoneObj, StoneTexture, [-0.01,0,0]
+      Stone2Obj, StoneTexture, [-0.01,0,0]
     ),new TexturedObject([-10, -1, -40], [1.0, 1.0, 1.0], color,
-      ChristmasTreeObj, ChristmasTreeTexture
+      RockWellObj, LowPolyTex
     ),new TexturedObject([-21, -1, -40], [1.0, 1.0, 1.0], color,
-      TreeObj, TreeTexture
+      TreeObj, LowPolyTex
     ),new TexturedObject([-2, -1, -50], [1.0, 1.0, 1.0], color,
       FieldObj, FieldTexture
     )]
