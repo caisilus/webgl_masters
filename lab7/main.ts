@@ -50,6 +50,9 @@ class Main {
   lightSource!: LightSource;
   lightController!: LightController;
   assetLoader: AssetLoader;
+  ambientCheckBox!: HTMLInputElement;
+  pointLightCheckBox!: HTMLInputElement;
+  projectorCheckBox!: HTMLInputElement;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     this.setupUI();
@@ -71,6 +74,9 @@ class Main {
   }
 
   setupUI() {
+    this.ambientCheckBox = document.querySelector("input#ambientCheckbox") as HTMLInputElement;
+    this.pointLightCheckBox = document.querySelector("input#pointLightCheckbox") as HTMLInputElement;
+    this.projectorCheckBox = document.querySelector("input#projectorCheckbox") as HTMLInputElement;
     document.addEventListener('keydown', (e) => { this.keyDown(e); }, false);
     document.addEventListener('keyup', (e) => { this.keyUp(e); }, false);
   }
@@ -167,6 +173,8 @@ class Main {
   update() {
     this.clearBackground();
 
+    this.updateActiveLightSources();
+
     this.rotateEach();
     this.gameObjects.forEach(object => object.update());
 
@@ -199,6 +207,11 @@ class Main {
 
   keyUp(e: KeyboardEvent) {
     this.keyHold[e.key] = false;
+  }
+
+  private updateActiveLightSources() {    
+    this.lightController.setActiveLights(this.ambientCheckBox.checked, 
+      this.pointLightCheckBox.checked, this.projectorCheckBox.checked);
   }
 }
 

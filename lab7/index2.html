@@ -12,11 +12,24 @@
                 padding: 10px;
                 border-bottom: solid black 1px;
             }
+            .checkbox-container {
+                display: flex;
+                flex-direction: row;
+            }
         </style>
         <script src="./main2.ts" type="module"></script>
     </head>
     <body>
         <a href="../index.html">На главную</a>
         <canvas id="mycanvas" width="800" height="600"></canvas>
+        <p>Виды освещения</p>
+        <div class="checkbox-container">
+            <p>Фоновое</p>
+            <input type="checkbox" id="ambientCheckbox" checked></input>
+            <p>Точечное</p>
+            <input type="checkbox" id="pointlightCheckbox"></input>
+            <p>Прожекторы</p>
+            <input type="checkbox" id="projectorCheckbox"></input>
+        </div>
     </body>
 </html>
