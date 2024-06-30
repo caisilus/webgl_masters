@@ -13,16 +13,16 @@ export class ControlledObject extends MovingObject {
     window.addEventListener('keydown', (event) => {
       switch (event.key) {
         case 'ArrowUp':
-          this.velocity[1] = 0.01; 
+          this.velocity[2] = 0.1; 
           break;
         case 'ArrowDown':
-          this.velocity[1] = -0.01; 
+          this.velocity[2] = -0.1; 
           break;
         case 'ArrowLeft':
-          this.velocity[0] = -0.01; 
+          this.velocity[0] = -0.1; 
           break;
         case 'ArrowRight':
-          this.velocity[0] = 0.01; 
+          this.velocity[0] = 0.1; 
           break;
       }
     });
@@ -31,7 +31,7 @@ export class ControlledObject extends MovingObject {
       switch (event.key) {
         case 'ArrowUp':
         case 'ArrowDown':
-          this.velocity[1] = 0; 
+          this.velocity[2] = 0; 
           break;
         case 'ArrowLeft':
         case 'ArrowRight':

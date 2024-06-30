@@ -18,9 +18,12 @@ import { MovingObject } from "../src/moving_object";
 import { ControlledObject } from "../src/controlled_object";
 import FieldObj from "../static/lab7/Field.obj"
 import FieldTexture from "../static/lab7/Field.png"
-import TankObj from "../static/lab7/Tanks.obj"
+import TankObj from "../static/lab7/plant.obj"
 import TankTexture from "../static/lab7/Tank.png"
-import FirewoodObj from "../static/lab7/firewood.obj"
+import RockGround from "../static/lab7/rock_ground_2.obj"
+import TombObj from "../static/lab7/tomb_4.obj"
+import Tree1Obj from "../static/lab7/tree_1.obj"
+import Tree2Obj from "../static/lab7/tree_2.obj"
 import WoodenLadderObj from "../static/lab7/wooden_ladder.obj"
 import LowPolyTextures from "../static/lab7/mtl.png"
 
@@ -59,7 +62,7 @@ class Main {
     this.program = programBuilder.buildProgram(guroVertexShader, guroFragmentShader);
 
     this.assetLoader = new AssetLoader();
-    this.assetLoader.loadObjs([BarrelObj, TreeObj, FieldObj, TankObj, FirewoodObj, WoodenLadderObj]).then(() => {
+    this.assetLoader.loadObjs([BarrelObj, TreeObj, FieldObj, TankObj, RockGround, WoodenLadderObj, TombObj, Tree1Obj, Tree2Obj]).then(() => {
       this.assetLoader.loadImages([TreeTexture, BarrelTexture, FieldTexture, TankTexture, LowPolyTextures]).then(() => {
         console.log("Assets loaded!");
         this.setupObjects();
@@ -80,16 +83,33 @@ class Main {
     let color = [217, 123, 9]
 
     color = color.map(c => c / 255.0);
-    this.gameObjects = [new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+    this.gameObjects = [new ControlledObject([0, -1.5, -50], [1.0, 1.0, 1.0], color,
       TankObj, TankTexture, [0,0,0]
-    ),new TexturedObject([10, -1, -40], [1.0, 1.0, 1.0], color,
-      FirewoodObj, LowPolyTextures
-    ),new TexturedObject([0, -1, -40], [1.0, 1.0, 1.0], color,
-      WoodenLadderObj, LowPolyTextures
+    ),new TexturedObject([-7.4, -1, -20], [1.0, 1.0, 1.0], color,
+      RockGround, LowPolyTextures
     )
+    ,new TexturedObject([-3.7, -1, -20], [1.0, 1.0, 1.0], color,
+      RockGround, LowPolyTextures
+    ),new TexturedObject([0, -1, -20], [1.0, 1.0, 1.0], color,
+      RockGround, LowPolyTextures
+    ),new TexturedObject([3.7, -1, -20], [1.0, 1.0, 1.0], color,
+      RockGround, LowPolyTextures
+    ),new TexturedObject([7.4, -1, -20], [1.0, 1.0, 1.0], color,
+      RockGround, LowPolyTextures
+    ),new TexturedObject([0, -1.5, -40], [1.0, 1.0, 1.0], color,
+      WoodenLadderObj, LowPolyTextures
+    ),new TexturedObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+      TombObj, LowPolyTextures
+    ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+      Tree1Obj, LowPolyTextures,[-0.1,0,0]
+    ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+      Tree2Obj, LowPolyTextures,[0.1,0,0]
+    )
+
   ]
 
-  this.gameObjects[2].transform.rotate([0, 90, 0]);
+  this.gameObjects[6].transform.rotate([0, 90, 0]);
+  this.gameObjects[7].transform.rotate([0, 90, 0]);
 
 
     this.gameObjects.forEach(object => object.setProgram(this.program));
