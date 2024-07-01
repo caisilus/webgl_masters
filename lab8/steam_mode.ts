@@ -5,33 +5,29 @@ import { getGl } from "../src/utils";
 import { Particle } from "./particle";
 import { ParticlesMode } from "./particles_mode";
 
-import sparksFrag from "./shaders/bengal.frag";
-import sparksVert from "./shaders/bengal.vert";
-
-import tracksFrag from "./shaders/tracks.frag";
-import tracksVert from "./shaders/tracks.vert";
+import steamFrag from "./shaders/steam.frag";
+import steamVert from "./shaders/steam.vert";
 
 import SmokeImage from "./images/smoke.png";
+import { SteamParticle } from "./steam_particle";
 
 export class SteamMode implements ParticlesMode {
   gl: WebGL2RenderingContext;
-  tracksProgram: ShaderProgram;
   sparksProgram: ShaderProgram;
-  particles: Particle[];
+  particles: SteamParticle[];
   camera: Camera;
   texture!: WebGLTexture;
 
   constructor(canvas: HTMLCanvasElement) {
     this.gl = getGl(canvas);
     const programBuilder = new ProgramBuilder(this.gl);
-    this.sparksProgram = programBuilder.buildProgram(sparksVert, sparksFrag);
-    this.tracksProgram = programBuilder.buildProgram(tracksVert, tracksFrag);
+    this.sparksProgram = programBuilder.buildProgram(steamVert, steamFrag);
 
     this.camera = new Camera(canvas.clientWidth, canvas.clientHeight);
     this.camera.position = new Float32Array([0, 0, 5]);
 
-    this.particles = this.generateParticles(200);
-    this.particles.forEach((particle) => particle.setPrograms(this.sparksProgram, this.tracksProgram));
+    this.particles = this.generateParticles(400);
+    this.particles.forEach((particle) => particle.setPrograms(this.sparksProgram));
 
     this.loadImage();
   }
@@ -39,15 +35,12 @@ export class SteamMode implements ParticlesMode {
   generateParticlesData(count: number) {
     const particles = [];
     for (let i = 0; i < count; i++) {
-      const angle = Math.random() * 360;
-      const ttl = 7;
-      const radius = Math.random() * 0.3;
-      const xMax = Math.cos(angle) * radius;
-      const yMax = Math.sin(angle) * radius;
-      const dx = xMax / ttl;
-      const dy = yMax / ttl;
-      const x = (dx * 1000) % xMax;
-      const y = (dy * 1000) % yMax;
+      const ttl = 100;
+      const x = Math.random() - 0.5;
+      const y = (Math.random() - 2.0) * 0.01;
+      const speed = Math.random() * 0.1;
+      const dx = 0;
+      const dy = speed
       particles.push(
         {
           position: [x, y, 0], 
@@ -63,16 +56,13 @@ export class SteamMode implements ParticlesMode {
   generateParticles(count: number) {
     const particles = [];
     for (let i = 0; i < count; i++) {
-      const angle = Math.random() * 360;
-      const ttl = 7;
-      const radius = Math.random() * 0.3;
-      const xMax = Math.cos(angle) * radius;
-      const yMax = Math.sin(angle) * radius;
-      const dx = xMax / ttl;
-      const dy = yMax / ttl;
-      const x = (dx * 1000) % xMax;
-      const y = (dy * 1000) % yMax;
-      particles.push(new Particle([x, y, 0], [dx, dy, 0], ttl));
+      const ttl = 100;
+      const x = Math.random() - 0.5;
+      const y = (Math.random() - 2.0) * 0.01;
+      const speed = Math.random() * 0.1;
+      const dx = 0;
+      const dy = speed
+      particles.push(new SteamParticle([x, y, 0], [dx, dy, 0], ttl));
     }
 
     return particles;
@@ -117,11 +107,6 @@ export class SteamMode implements ParticlesMode {
     const viewMatrixUniformSpark = this.sparksProgram.getUniformLocation("mView");
     if (viewMatrixUniformSpark)
       this.gl.uniformMatrix4fv(viewMatrixUniformSpark, false, this.camera.view);
-
-    this.gl.useProgram(this.tracksProgram.program);
-    const viewMatrixUniformTrack = this.tracksProgram.getUniformLocation("mView");
-    if (viewMatrixUniformTrack)
-      this.gl.uniformMatrix4fv(viewMatrixUniformTrack, false, this.camera.view);
   }
 
   updateProjUniform() {
@@ -129,11 +114,6 @@ export class SteamMode implements ParticlesMode {
     const viewMatrixUniformSpark = this.sparksProgram.getUniformLocation("mProj");
     if (viewMatrixUniformSpark)
       this.gl.uniformMatrix4fv(viewMatrixUniformSpark, false, this.camera.view);
-
-    this.gl.useProgram(this.tracksProgram.program);
-    const viewMatrixUniformTrack = this.tracksProgram.getUniformLocation("mProj");
-    if (viewMatrixUniformTrack)
-      this.gl.uniformMatrix4fv(viewMatrixUniformTrack, false, this.camera.view);
   }
 
   update() {
