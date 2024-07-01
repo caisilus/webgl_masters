@@ -2,6 +2,7 @@ import { mat4, vec3 } from "gl-matrix";
 import { ShaderProgram } from "../src/shader_program";
 import { Transformator } from "../src/transformator"
 import VertexAttribute from "../src/vertex_attribute";
+import { ParticlesMode } from "./particles_mode";
 
 export class Particle {
   transform: Transformator;
@@ -18,17 +19,30 @@ export class Particle {
   private trackVertexBuffer!: WebGLBuffer;
 
   currentLife: number;
-  texture: WebGLTexture;
+  texture!: WebGLTexture;
+  bengalMode!: ParticlesMode;
 
   constructor(readonly position: [number, number, number], 
-              readonly velocity: [number, number, number], 
-              readonly lifeTime: number) {
+              private velocity: [number, number, number], 
+              private lifeTime: number) {
 
     this.currentLife = lifeTime;
     this.transform = new Transformator();
     this.transform.setdDefaultScaling();
     this.transform.setDefaultTranslation();
     this.vaoInitialized = false;
+    this.transform.translate(position[0], position[1], position[2]);
+  }
+
+  reset(position: [number, number, number], 
+        velocity: [number, number, number], 
+        lifeTime: number) {
+
+    this.currentLife = lifeTime;
+    this.lifeTime = lifeTime;
+    this.velocity = velocity;
+    this.transform.setdDefaultScaling();
+    this.transform.setDefaultTranslation();
     this.transform.translate(position[0], position[1], position[2]);
   }
 
@@ -191,10 +205,11 @@ export class Particle {
     this.transform.translate(this.velocity[0], this.velocity[1], this.velocity[2]);
     this.currentLife--;
     if (this.currentLife < 0) {
-      this.currentLife = this.lifeTime;
-      this.velocity[0] *= -1;
-      this.velocity[1] *= -1;
-      this.velocity[2] *= -1;
+      // this.currentLife = this.lifeTime;
+      // this.velocity[0] *= -1;
+      // this.velocity[1] *= -1;
+      // this.velocity[2] *= -1;
+      this.bengalMode.reset();
     }
   }
 }

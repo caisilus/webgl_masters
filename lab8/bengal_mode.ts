@@ -28,18 +28,42 @@ export class BengalMode {
     this.camera = new Camera(canvas.clientWidth, canvas.clientHeight);
     this.camera.position = new Float32Array([0, 0, 5]);
 
-    this.particles = this.generateParticles(10);
+    this.particles = this.generateParticles(200);
     this.particles.forEach((particle) => particle.setPrograms(this.sparksProgram, this.tracksProgram));
 
     this.loadImage();
+  }
+
+  generateParticlesData(count: number) {
+    const particles = [];
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * 360;
+      const ttl = 7;
+      const radius = Math.random() * 0.3;
+      const xMax = Math.cos(angle) * radius;
+      const yMax = Math.sin(angle) * radius;
+      const dx = xMax / ttl;
+      const dy = yMax / ttl;
+      const x = (dx * 1000) % xMax;
+      const y = (dy * 1000) % yMax;
+      particles.push(
+        {
+          position: [x, y, 0], 
+          velocity: [dx, dy, 0],
+          ttl: ttl
+        }
+      );
+    }
+
+    return particles;
   }
 
   generateParticles(count: number) {
     const particles = [];
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * 360;
-      const ttl = 300;
-      const radius = Math.random();
+      const ttl = 7;
+      const radius = Math.random() * 0.3;
       const xMax = Math.cos(angle) * radius;
       const yMax = Math.sin(angle) * radius;
       const dx = xMax / ttl;
@@ -79,7 +103,10 @@ export class BengalMode {
     this.updateProjUniform();
     this.gl.enable(this.gl.BLEND);
     this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE);
-    this.particles.forEach((particle) => particle.start());
+    this.particles.forEach((particle) => {
+      particle.start();
+      particle.bengalMode = this;
+    });
     requestAnimationFrame(() => this.update());
   }
   
@@ -121,5 +148,20 @@ export class BengalMode {
     // this.gl.useProgram(this.tracksProgram.program);
     // this.gl.clearColor(0.3, 0.3, 0.3, 1.0);
     // this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
+  reset() {
+    // requestAnimationFrame(() => {});
+    // this.particles = this.generateParticles(10);
+    // this.particles.forEach((particle) => particle.setPrograms(this.sparksProgram, this.tracksProgram));
+    // this.start();
+
+    const particlesData = this.generateParticlesData(this.particles.length);
+    this.particles.forEach((particle, i) => {
+      const data = particlesData[i];
+      const position : [number, number, number] = [data.position[0], data.position[1], data.position[2]];
+      const velocity : [number, number, number] = [data.velocity[0], data.velocity[1], data.velocity[2]];
+      particle.reset(position, velocity, data.ttl);
+    })
   }
 }
