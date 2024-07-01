@@ -5,6 +5,7 @@ import { getGl } from "../src/utils";
 import { BengalMode } from "./bengal_mode";
 import { FireworkMode } from "./firework_mode";
 import { SteamMode } from "./steam_mode";
+import { FontainMode } from "./fontain_mode";
 
 class Main {
   canvas: HTMLCanvasElement;
@@ -26,6 +27,9 @@ class Main {
         break;
       case "steam":
         new SteamMode(this.canvas);
+        break;
+      case "fontain":
+        new FontainMode(this.canvas);
         break;
     }
   }
