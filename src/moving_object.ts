@@ -15,7 +15,7 @@ export class MovingObject extends TexturedObject {
     this.move();
   }
 
-  private move(): void {
+  protected move(): void {
     this.transform.translate(this.velocity[0], this.velocity[1], this.velocity[2]);
   }
 }

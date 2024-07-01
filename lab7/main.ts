@@ -86,6 +86,13 @@ class Main {
     // let color = [245, 164, 66]
     let color = [217, 123, 9]
 
+    const movingSpotLight = new SpotLight([0, -1, -50], [0, -1, -55], 10)
+    const controlledObject = new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+      StoneObj, StoneTexture, 
+    )
+
+    controlledObject.addSpotlight(movingSpotLight);
+
     color = color.map(c => c / 255.0);
     this.gameObjects = [new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
       FirewoodObj, LowPolyTex, [0.01,0,0]
@@ -95,9 +102,7 @@ class Main {
       TreeObj, LowPolyTex
     ),new TexturedObject([10, -1, -70], [1.0, 1.0, 1.0], color,
       TreeObj, LowPolyTex
-    ),new ControlledObject([0, -1, -50], [1.0, 1.0, 1.0], color,
-      StoneObj, StoneTexture, 
-    ),new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
+    ), controlledObject, new MovingObject([0, -1, -50], [1.0, 1.0, 1.0], color,
       Stone2Obj, StoneTexture, [-0.01,0,0]
     ),new TexturedObject([-10, -1, -40], [1.0, 1.0, 1.0], color,
       RockWellObj, LowPolyTex
@@ -114,7 +119,9 @@ class Main {
     this.lightSource = new LightSource([10, 10, 10]);
     this.lightController = new LightController(this.program);
     this.lightController.addLightSource(new LightSource([-10, 10, -10]))
-    this.lightController.addSpotLight(new SpotLight([0, 50, -50], [0, 0, -50], 10))
+    // this.lightController.addSpotLight(new SpotLight([0, 30, -50], [0, 0, -50], 10))
+    this.lightController.addSpotLight(new SpotLight([10, 15, -70], [5, 0, -60], 10))
+    this.lightController.addSpotLight(movingSpotLight);
   }
 
   useProgram() {
@@ -183,6 +190,7 @@ class Main {
     this.clearBackground();
 
     this.updateActiveLightSources();
+    this.lightController.updateUniforms();
 
     this.rotateEach();
     this.gameObjects.forEach(object => object.update());

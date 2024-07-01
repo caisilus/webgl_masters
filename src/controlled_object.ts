@@ -1,11 +1,19 @@
 import { MovingObject } from "./moving_object";
+import { SpotLight } from "./spot_light";
 
 export class ControlledObject extends MovingObject {
+  spotLights: SpotLight[];
+
   constructor(position: Array<number>, scale: Array<number>, color: Array<number>,
     objUrl: string, texUrl: string) {
 
     super(position, scale, color, objUrl, texUrl, [0,0,0]);
     this.setupKeyboardControls();
+    this.spotLights = [];
+  }
+
+  addSpotlight(spotLight: SpotLight) {
+    this.spotLights.push(spotLight);
   }
 
   private setupKeyboardControls(): void {
@@ -42,5 +50,12 @@ export class ControlledObject extends MovingObject {
 
   protected beforeUpdate(): void {
     super.beforeUpdate();
+  }
+
+  protected move() {
+    super.move();
+    this.spotLights.forEach((sp) => {
+      sp.moveBy([this.velocity[0], this.velocity[1], this.velocity[2]]);
+    });
   }
 }
