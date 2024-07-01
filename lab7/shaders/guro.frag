@@ -102,7 +102,16 @@ void main() {
     }
   }
 
-  // sumAmbient = sumAmbient / float(numPointLights);
+  float pointCoef = 0.0;
+  if (usePointLight) {
+    pointCoef = 1.0;
+  }
+
+  float spotLightCoef = 0.0;
+  if (useSpotLight) {
+    spotLightCoef = 1.0;
+  }
+  sumAmbient = sumAmbient / (pointCoef * float(numPointLights) + spotLightCoef * float(numSpotLights));
   sumDiffuse = clamp(sumDiffuse, 0.0, 1.0);
   sumSpecular = clamp(sumSpecular, 0.0, 1.0);
 

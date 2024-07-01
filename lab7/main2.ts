@@ -26,6 +26,7 @@ import Tree1Obj from "../static/lab7/tree_1.obj"
 import Tree2Obj from "../static/lab7/tree_2.obj"
 import WoodenLadderObj from "../static/lab7/wooden_ladder.obj"
 import LowPolyTextures from "../static/lab7/mtl.png"
+import { SpotLight } from "../src/spot_light";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -89,33 +90,39 @@ class Main {
     let color = [217, 123, 9]
 
     color = color.map(c => c / 255.0);
-    this.gameObjects = [new ControlledObject([0, -1.5, -50], [1.0, 1.0, 1.0], color,
-      TankObj, TankTexture
-    ),new TexturedObject([-7.4, -1, -20], [1.0, 1.0, 1.0], color,
-      RockGround, LowPolyTextures
-    )
-    ,new TexturedObject([-3.7, -1, -20], [1.0, 1.0, 1.0], color,
-      RockGround, LowPolyTextures
-    ),new TexturedObject([0, -1, -20], [1.0, 1.0, 1.0], color,
-      RockGround, LowPolyTextures
-    ),new TexturedObject([3.7, -1, -20], [1.0, 1.0, 1.0], color,
-      RockGround, LowPolyTextures
-    ),new TexturedObject([7.4, -1, -20], [1.0, 1.0, 1.0], color,
-      RockGround, LowPolyTextures
-    ),new TexturedObject([0, -1.5, -40], [1.0, 1.0, 1.0], color,
-      WoodenLadderObj, LowPolyTextures
-    ),new TexturedObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
-      TombObj, LowPolyTextures
-    ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
-      Tree1Obj, LowPolyTextures,[-0.1,0,0]
-    ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
-      Tree2Obj, LowPolyTextures,[0.1,0,0]
-    )
 
-  ]
+    const movingSpotLight = new SpotLight([0, -1.5, -50], [0, -1, -55], 10)
+    const controlledObject = new ControlledObject([0, -1.5, -50], [1.0, 1.0, 1.0], color,
+        TankObj, TankTexture
+      )
 
-  this.gameObjects[6].transform.rotate([0, 90, 0]);
-  this.gameObjects[7].transform.rotate([0, 90, 0]);
+    controlledObject.addSpotlight(movingSpotLight);
+
+    this.gameObjects = [controlledObject, new TexturedObject([-7.4, -1, -20], [1.0, 1.0, 1.0], color,
+        RockGround, LowPolyTextures
+      )
+      ,new TexturedObject([-3.7, -1, -20], [1.0, 1.0, 1.0], color,
+        RockGround, LowPolyTextures
+      ),new TexturedObject([0, -1, -20], [1.0, 1.0, 1.0], color,
+        RockGround, LowPolyTextures
+      ),new TexturedObject([3.7, -1, -20], [1.0, 1.0, 1.0], color,
+        RockGround, LowPolyTextures
+      ),new TexturedObject([7.4, -1, -20], [1.0, 1.0, 1.0], color,
+        RockGround, LowPolyTextures
+      ),new TexturedObject([0, -1.5, -40], [1.0, 1.0, 1.0], color,
+        WoodenLadderObj, LowPolyTextures
+      ),new TexturedObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+        TombObj, LowPolyTextures
+      ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+        Tree1Obj, LowPolyTextures,[-0.1,0,0]
+      ),new MovingObject([8, -1.5, -40], [1.0, 1.0, 1.0], color,
+        Tree2Obj, LowPolyTextures,[0.1,0,0]
+      )
+
+    ]
+
+    this.gameObjects[6].transform.rotate([0, 90, 0]);
+    this.gameObjects[7].transform.rotate([0, 90, 0]);
 
 
     this.gameObjects.forEach(object => object.setProgram(this.program));
@@ -124,6 +131,8 @@ class Main {
     this.lightSource = new LightSource([10, 10, 10]);
     this.lightController = new LightController(this.program);
     this.lightController.addLightSource(new LightSource([10, 10, 10]))
+    this.lightController.addSpotLight(new SpotLight([10, 20, -40], [0, 0, -15], 5))
+    this.lightController.addSpotLight(movingSpotLight);
   }
 
   useProgram() {
