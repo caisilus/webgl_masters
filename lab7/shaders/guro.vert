@@ -18,12 +18,12 @@ in vec2 vertTexCoord;
 out vec2 texCoord;
 
 void main() {
-  vec4 surfacePos = mView * mModel * vec4(vertPosition, 1.0);
-  vec4 viewSurfacePos = mView * surfacePos;
-  position = viewSurfacePos.xyz / viewSurfacePos.w;
+  vec4 surfacePos = mModel * vec4(vertPosition, 1.0);
+  position = surfacePos.xyz / surfacePos.w;
+  // position = surfacePos.xyz;
   normal = normalize(mNormal * vertNormal);
   texCoord = vertTexCoord;
   color = vertColor;
 
-  gl_Position = mProj * viewSurfacePos;
+  gl_Position = mProj * mView * surfacePos;
 }

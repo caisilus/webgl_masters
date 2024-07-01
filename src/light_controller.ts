@@ -110,9 +110,11 @@ export class LightController {
     if (directionLocation) {
       this.gl.uniform3fv(directionLocation, spotLight.direction);
     } 
+
+    const limit = Math.cos(spotLight.limit * Math.PI / 180);
     const limitLocation = this.program.getUniformLocation(`slLimit[${index}]`);
     if (limitLocation) {
-      this.gl.uniform1f(limitLocation, spotLight.limit);
+      this.gl.uniform1f(limitLocation, limit);
     } 
 
     const ambientColorLocation = this.program.getUniformLocation(`slAmbient[${index}]`);

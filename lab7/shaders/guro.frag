@@ -4,7 +4,7 @@
 precision highp float;
 #endif
 
-uniform mat4 mView;
+uniform vec3 cameraPosition;
 
 // Point lights
 uniform int numPointLights;
@@ -15,7 +15,6 @@ uniform vec3[10] pointLightSpecularColors;
 
 // SpotLights
 uniform int numSpotLights;
-in vec3[10] toslDirection;
 uniform vec3[10] slPosition;
 uniform vec3[10] slDirection;
 uniform float[10] slLimit;
@@ -55,7 +54,7 @@ void main() {
       float d = distance(pointLightPositions[i], position);
       vec3 dirToLight = normalize(pointLightPositions[i] - position); // l
       vec3 reflVec = normalize(reflect(-dirToLight, normal)); // r
-      vec3 dirToView = normalize(0.0 - position); // v
+      vec3 dirToView = normalize(cameraPosition - position); // v
 
       float attenuation = 1.0 / (constantAttenuation + linearAttenuation * d + quadraticAttenuation * d * d);
 
@@ -73,25 +72,19 @@ void main() {
   if (useSpotLight) {
     for (int i = 0; i < numSpotLights; i++)
     {
-      vec3 splPosition = (mView * vec4(slPosition[i], 1.0)).xyz;
-      // vec3 splPosition = slPosition[i];
-      vec3 splDirection = (mView * vec4(slDirection[i], 1.0)).xyz;
-      // vec3 splDirection = slDirection[i];
-
-      vec3 toslDirection = splPosition - position;
+      vec3 toslDirection = slPosition[i] - position;
       vec3 l = normalize(toslDirection);
-      vec3 d = normalize(splDirection);
+      vec3 d = normalize(slDirection[i]);
       float dotFromDirection = dot(l,-d);
 
       if (dotFromDirection >= slLimit[i]) 
       {
           vec3 lightdir = l;
           vec3 r = normalize(-reflect(lightdir, normal));
-          vec3 v = normalize(0.0 - position);
+          vec3 v = normalize(cameraPosition - position);
 
           vec3 ambient = slAmbient[i];
-          // vec3 diffuse = slDiffuse[i] * max(dot(normal, lightdir),0.0);
-          vec3 diffuse = slDiffuse[i];
+          vec3 diffuse = slDiffuse[i] * max(dot(normal, lightdir),0.0);
           diffuse = clamp(diffuse, 0.0, 1.0);
 
           vec3 specular = slSpecular[i] * pow(max(dot(r,v),0.0), 300.0);
@@ -100,9 +93,11 @@ void main() {
           sumAmbient += ambient;
           sumDiffuse += diffuse;
           sumSpecular += specular;     
+          // fragColor = vec4(0.0, 0.0, 1.0, 1.0);
       }else
       {
           sumAmbient += slAmbient[i];
+          // fragColor = vec4(dotFromDirection, 0.0, 0.0, 1.0);
       }
     }
   }
@@ -119,6 +114,6 @@ void main() {
 
   fragColor = textColor;
   fragColor.xyz = illumination * fragColor.xyz;
-  // fragColor = vec4(numSpotLights, numSpotLights, numSpotLights, 1.0);
-  // fragColor.xyz = sumDiffuse;
+
+  // fragColor = vec4(slLimit[0], slLimit[0], slLimit[0], 1.0);
 }

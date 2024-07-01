@@ -114,7 +114,7 @@ class Main {
     this.lightSource = new LightSource([10, 10, 10]);
     this.lightController = new LightController(this.program);
     this.lightController.addLightSource(new LightSource([-10, 10, -10]))
-    this.lightController.addSpotLight(new SpotLight([0, 10, 0], [0, 0, 0], 10))
+    this.lightController.addSpotLight(new SpotLight([0, 50, -50], [0, 0, -50], 10))
   }
 
   useProgram() {
@@ -140,6 +140,7 @@ class Main {
   setUniforms() {
     this.updateViewUniform();
     this.updateProjUniform();
+    this.updateCameraPosition();
     this.lightController.constantAttenuation = 1.0;
     this.lightController.linearAttenuation = 0.02;
     this.lightController.quadraticAttenuation = 0.0;
@@ -158,6 +159,12 @@ class Main {
     const projMatrixUniform = this.program.getUniformLocation("mProj");
     if (projMatrixUniform)
       this.gl.uniformMatrix4fv(projMatrixUniform, false, this.camera.proj);
+  }
+
+  updateCameraPosition() {
+    const uniform = this.program.getUniformLocation("cameraPosition");
+    if (uniform)
+      this.gl.uniform3fv(uniform, this.camera.position);
   }
 
   updateImageSize() {
