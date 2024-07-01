@@ -23,6 +23,7 @@ import StoneTexture from "../static/lab7/Stone-1.png"
 import Stone2Obj from "../static/lab7/Stone-2.obj"
 import RockWellObj from "../static/lab7/rock_well.obj"
 import LowPolyTex from "../static/lab7/mtl.png"
+import { SpotLight } from "../src/spot_light";
 
 function getGl(canvas: HTMLCanvasElement) {
   if (canvas == null) {
@@ -111,8 +112,9 @@ class Main {
 
     this.camera = new Camera(this.canvas.clientWidth, this.canvas.clientHeight);
     this.lightSource = new LightSource([10, 10, 10]);
-    this.lightController = new LightController(this.program, this.lightSource);
+    this.lightController = new LightController(this.program);
     this.lightController.addLightSource(new LightSource([-10, 10, -10]))
+    this.lightController.addSpotLight(new SpotLight([0, 10, 0], [0, 0, 0], 10))
   }
 
   useProgram() {

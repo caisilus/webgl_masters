@@ -1,9 +1,12 @@
+import { vec3 } from "gl-matrix";
 import { LightSource } from "./light_source";
 import { ShaderProgram } from "./shader_program";
+import { SpotLight } from "./spot_light";
 
 export class LightController {
   gl: WebGL2RenderingContext;
   lightSources: LightSource[];
+  spotLights: SpotLight[];
   constantAttenuation: number = 0;
   linearAttenuation: number = 0;
   quadraticAttenuation: number = 0;
@@ -12,8 +15,10 @@ export class LightController {
   pointLightEnabledLocation!: WebGLUniformLocation;
   spotLightEnabledLocation!: WebGLUniformLocation;
   numPointLightsLocation!: WebGLUniformLocation;
+  numSpotLightsLocation!: WebGLUniformLocation;
+  numSpotLightsVLocation!: WebGLUniformLocation;
 
-  constructor(public program: ShaderProgram, readonly lightSource: LightSource) {
+  constructor(public program: ShaderProgram) {
     this.gl = program.gl;
 
     const useGlobalLightUniform = program.getUniformLocation("useAmbientLight");
@@ -32,12 +37,24 @@ export class LightController {
     if (numPointLightsUniform)
       this.numPointLightsLocation = numPointLightsUniform;
 
+    const numSpotLights = program.getUniformLocation("numSpotLights")
+    if (numSpotLights)
+      this.numSpotLightsLocation = numSpotLights;
+
+    const numSpotLightsV = program.getUniformLocation("numSpotLightsV")
+    if (numSpotLightsV)
+      this.numSpotLightsVLocation = numSpotLightsV;
+
     this.lightSources = [];
-    this.addLightSource(lightSource);
+    this.spotLights = [];
   }
 
   addLightSource(lightSource: LightSource) {
     this.lightSources.push(lightSource);
+  }
+
+  addSpotLight(spotlight: SpotLight) {
+    this.spotLights.push(spotlight);
   }
 
   setActiveLights(useAmbient: boolean, usePoint: boolean, useSpotLight: boolean) {
@@ -46,12 +63,15 @@ export class LightController {
     const spotlight = useSpotLight ? 1 : 0;
     this.gl.uniform1i(this.ambientLightEnabledLocation, ambient);
     this.gl.uniform1i(this.pointLightEnabledLocation, point);
-    // this.gl.uniform1i(this.spotLightEnabledLocation, spotlight);
+    this.gl.uniform1i(this.spotLightEnabledLocation, spotlight);
   }
 
   updateUniforms() {
     this.gl.uniform1i(this.numPointLightsLocation, this.lightSources.length);
+    this.gl.uniform1i(this.numSpotLightsLocation, this.spotLights.length);
+    this.gl.uniform1i(this.numSpotLightsVLocation, this.spotLights.length);
     this.lightSources.forEach((_, index) => {this.updatePointLight(index);})
+    this.spotLights.forEach((_, index) => {this.updateSpotLight(index);})
     this.updateAttenuation();
   }
 
@@ -74,6 +94,38 @@ export class LightController {
     const specularColorLocation = this.program.getUniformLocation(`pointLightSpecularColors[${index}]`);
     if (specularColorLocation) {
       this.gl.uniform3fv(specularColorLocation, lightSource.ambientColor);
+    }  
+  }
+
+  private updateSpotLight(index: number) {
+    const spotLight = this.spotLights[index];
+    console.log(spotLight);
+
+    const positionLocation = this.program.getUniformLocation(`slPosition[${index}]`);
+    if (positionLocation) {
+      this.gl.uniform3fv(positionLocation, spotLight.position);
+    } 
+
+    const directionLocation = this.program.getUniformLocation(`slDirection[${index}]`);
+    if (directionLocation) {
+      this.gl.uniform3fv(directionLocation, spotLight.direction);
+    } 
+    const limitLocation = this.program.getUniformLocation(`slLimit[${index}]`);
+    if (limitLocation) {
+      this.gl.uniform1f(limitLocation, spotLight.limit);
+    } 
+
+    const ambientColorLocation = this.program.getUniformLocation(`slAmbient[${index}]`);
+    if (ambientColorLocation) {
+      this.gl.uniform3fv(ambientColorLocation, spotLight.ambientColor);
+    } 
+    const diffuseColorLocation = this.program.getUniformLocation(`slDiffuse[${index}]`);
+    if (diffuseColorLocation) {
+      this.gl.uniform3fv(diffuseColorLocation, spotLight.diffuseColor);
+    } 
+    const specularColorLocation = this.program.getUniformLocation(`slSpecular[${index}]`);
+    if (specularColorLocation) {
+      this.gl.uniform3fv(specularColorLocation, spotLight.ambientColor);
     }  
   }
 
