@@ -91,7 +91,7 @@ class Main {
 
     color = color.map(c => c / 255.0);
 
-    const movingSpotLight = new SpotLight([0, -1.5, -50], [0, -1, -55], 10)
+    const movingSpotLight = new SpotLight([0, -1.5, -50], [0, -1.5, -55], 10)
     const controlledObject = new ControlledObject([0, -1.5, -50], [1.0, 1.0, 1.0], color,
         TankObj, TankTexture
       )
@@ -193,6 +193,7 @@ class Main {
     this.clearBackground();
 
     this.updateActiveLightSources();
+    this.lightController.updateUniforms();
 
     this.rotateEach();
     this.gameObjects.forEach(object => object.update());
